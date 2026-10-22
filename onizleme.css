@@ -561,19 +561,16 @@ input:not([type=checkbox]) {
   display: block;
 }
 
-.hero {
-  background-size: cover;
-  background-position: center;
-}
-
-.hero::before {
-  content: "";
+.hero-banner {
   position: absolute;
   inset: 0 0 auto;
   height: clamp(340px,36vw,560px);
-  background: url("Havada Muhteşem Smaç Anı.png") center 35% / cover no-repeat;
+  width: 100%;
+  object-fit: cover;
+  object-position: center 35%;
   -webkit-mask-image: linear-gradient(#000 55%,transparent);
   mask-image: linear-gradient(#000 55%,transparent);
+  transform: translate3d(0,var(--py,0px),0) scale(1.1);
 }
 
 .logo,.plate {
@@ -608,10 +605,6 @@ input:not([type=checkbox]) {
   height: 190px;
   pointer-events: none;
   will-change: transform;
-}
-
-.hero::before {
-  transform: translate3d(0,var(--py,0px),0) scale(1.1);
 }
 
 .sp .w {
@@ -1689,7 +1682,7 @@ html.is-loading body {
   min-height: 100vh;
   display: grid;
   align-items: center;
-  background-image: linear-gradient(90deg,rgba(6,20,40,.94),rgba(6,20,40,.72) 55%,rgba(6,20,40,.3)),url("Havada Muhteşem Smaç Anı.png");
+  background-image: linear-gradient(90deg,rgba(6,20,40,.94),rgba(6,20,40,.72) 55%,rgba(6,20,40,.3)),url("./assets/basketball-banner.png");
   background-position: center 36%;
   background-size: cover;
 }
