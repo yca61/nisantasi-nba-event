@@ -168,53 +168,37 @@ if (matchMedia("(hover:hover)").matches && !reduceMotion) {
 
 // Basvuru formu icerigi ve alan ikonlari
 var requiredFieldMessages = {
-	ad: "Adınızı girin",
-	soyad: "Soyadınızı girin",
-	kurum: "Kurum / üniversite girin",
-	takim: "Takım adını girin"
+	team_name: "Takım veya okul adını girin",
+	contact_name: "Başvuru sorumlusunun adını girin",
+	email: "E-posta adresini girin",
+	tel: "Telefon numarasını girin",
+	athlete_name: "Sporcu adı soyadı girin",
+	tc_kimlik: "T.C. kimlik numarasını girin",
+	height: "Sporcu boyunu girin",
+	weight: "Sporcu kilosunu girin",
+	jersey_size: "Forma bedenini seçin",
+	jersey_number: "Maç forma numarasını girin"
 };
 
 var formDefinitions = {
 	y: {
-		t: "Yarışmaya katıl",
-		s: "Takımınla sahaya çık. Başvurunu birkaç dakikada tamamla.",
-		p: [
-			"Başvurular organizasyon ekibince incelenir",
-			"Onay ve program bilgisi e-postayla iletilir",
-			"Başvuru sonunda referans numarası verilir"
-		],
+		t: "Takım / okul başvurusu",
+		s: "Takım bilgilerini ve beş sporcunun bilgilerini doldurun.",
 		g: [
-			["Kişisel bilgiler", [
-				["ad", "Ad", "text", "given-name", 1],
-				["soyad", "Soyad", "text", "family-name", 1],
+			["Takım ve sorumlu kişi", [
+				["team_name", "Takım / okul adı", "text", "organization", 1, 1],
+				["contact_name", "Başvuru sorumlusu adı soyadı", "text", "name", 1, 1],
 				["email", "E-posta", "email", "email", 1, 1],
 				["tel", "Telefon", "tel", "tel", 1, 1, "05XXXXXXXXX"]
-			]],
-			["Kurum ve takım", [
-				["kurum", "Üniversite / kurum", "text", "organization", 1, 1],
-				["bolum", "Bölüm (isteğe bağlı)", "text", "", 0],
-				["takim", "Takım adı", "text", "", 1]
 			]]
-		]
-	},
-	t: {
-		t: "Tribüne katıl",
-		s: "Heyecana ortak ol. Kısa formu doldur, yerini ayırt.",
-		p: [
-			"Kontenjan dolunca başvurular durdurulabilir",
-			"Yedek liste uygulanırsa e-postayla bildirilir",
-			"Başvuru sonunda referans numarası verilir"
 		],
-		g: [
-			["Kişisel bilgiler", [
-				["ad", "Ad", "text", "given-name", 1],
-				["soyad", "Soyad", "text", "family-name", 1],
-				["email", "E-posta", "email", "email", 1, 1],
-				["tel", "Telefon", "tel", "tel", 1, 1, "05XXXXXXXXX"]
-			]],
-			["Kurum", [
-				["kurum", "Üniversite / kurum (isteğe bağlı)", "text", "organization", 0, 1]
-			]]
+		athletes: [
+			["athlete_name", "Sporcu Adı Soyadı", "text", "name", 1, 1],
+			["tc_kimlik", "T.C. Kimlik Numarası", "text", "off", 1, 1, "11 haneli numara"],
+			["height", "Boy (cm)", "number", "off", 1, 0, "", 100, 240],
+			["weight", "Kilo (kg)", "number", "off", 1, 0, "", 25, 250],
+			["jersey_size", "Forma bedeni", "text", "off", 1],
+			["jersey_number", "Maç forma numarası", "number", "off", 1, 0, "", 0, 99]
 		]
 	}
 };
@@ -232,7 +216,25 @@ function validateField(name, value, required) {
 			: "Telefon 05XXXXXXXXX biçiminde olmalı";
 	}
 
-	return required && value.length < 2 ? requiredFieldMessages[name] : "";
+	if (name === "tc_kimlik") {
+		return /^\d{11}$/.test(value) ? "" : "T.C. kimlik numarası 11 haneli olmalı";
+	}
+
+	if (name === "height" || name === "weight" || name === "jersey_number") {
+		var number = Number(value);
+		var min = name === "jersey_number" ? 0 : 1;
+		var max = name === "height" ? 240 : name === "weight" ? 250 : 99;
+		return Number.isInteger(number) && number >= min && number <= max
+			? ""
+			: name === "jersey_number" ? "Forma numarası 0 ile 99 arasında olmalı" : "Geçerli bir sayı girin";
+	}
+
+	if (!required) return "";
+	if (!value) return requiredFieldMessages[name] || "Bu alan zorunludur";
+	if ((name === "team_name" || name === "contact_name" || name === "athlete_name") && value.length < 2) {
+		return requiredFieldMessages[name] || "En az 2 karakter girin";
+	}
+	return "";
 }
 
 var fieldIcons = {
@@ -241,17 +243,25 @@ var fieldIcons = {
 	phone: '<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/>',
 	building: '<path d="M3 21h18M5 21V7l7-4 7 4v14M9 9h1M9 13h1M14 9h1M14 13h1M10 21v-4h4v4"/>',
 	book: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/>',
-	users: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/>'
+	users: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/>',
+	idCard: '<rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8" cy="12" r="2"/><path d="M14 10h4M14 14h4"/>',
+	ruler: '<path d="m21.3 8.7-12.6 12.6a2 2 0 0 1-2.8 0l-2.2-2.2a2 2 0 0 1 0-2.8L16.3 3.7a2 2 0 0 1 2.8 0l2.2 2.2a2 2 0 0 1 0 2.8Z"/><path d="m7.5 14.5 2 2M10.5 11.5l2 2M13.5 8.5l2 2"/>',
+	weight: '<path d="M12 3v18M5 7h14M5 7l-3 6h6L5 7ZM19 7l-3 6h6l-3-6Z"/>',
+	shirt: '<path d="m16 3-4 2-4-2-5 3 2 5 3-1v12h8V10l3 1 2-5-5-3Z"/>',
+	hash: '<line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/>'
 };
 
 var fieldIconNames = {
-	ad: "user",
-	soyad: "user",
+	team_name: "building",
+	contact_name: "user",
 	email: "mail",
 	tel: "phone",
-	kurum: "building",
-	bolum: "book",
-	takim: "users"
+	athlete_name: "user",
+	tc_kimlik: "idCard",
+	height: "ruler",
+	weight: "weight",
+	jersey_size: "shirt",
+	jersey_number: "hash"
 };
 
 // Basvuru pencerelerini olustur ve alan dogrulamasini bagla
@@ -264,17 +274,32 @@ function createApplicationDialog(kind) {
 
 	var markup = '<div class="pg"><i></i></div><div class="fb"><button class="fx" type="button" aria-label="Kapat">✕</button><h2 id="t-' + kind + '">' + config.t + '</h2><p class="fsub">' + config.s + ' Zorunlu alanlar * ile işaretlidir.</p><form novalidate>';
 
+	function renderField(field, prefix) {
+		var fieldId = kind + (prefix ? "-" + prefix + "-" : "-") + field[0];
+		var fieldName = prefix ? prefix + "_" + field[0] : field[0];
+		var numericAttributes = field[2] === "number" ? ' inputmode="numeric" min="' + field[7] + '" max="' + field[8] + '" step="1"' : "";
+		var identityAttributes = field[0] === "tc_kimlik" ? ' inputmode="numeric" maxlength="11" pattern="[0-9]{11}"' : "";
+
+		return '<div class="fl' + (field[5] ? " full" : "") + '"><label for="' + fieldId + '">' + field[1] + (field[4] ? '<b class="rq" aria-hidden="true">*</b>' : "") + '</label><div class="iw"><svg viewBox="0 0 24 24" aria-hidden="true">' + fieldIcons[fieldIconNames[field[0]]] + '</svg><input id="' + fieldId + '" name="' + fieldName + '" data-field="' + field[0] + '" type="' + field[2] + '" autocomplete="' + (field[3] || "off") + '"' + (field[6] ? ' placeholder="' + field[6] + '"' : "") + (field[2] === "tel" ? ' inputmode="tel" maxlength="14"' : "") + (field[2] === "email" ? ' inputmode="email"' : "") + numericAttributes + identityAttributes + ' data-r="' + field[4] + '"></div><span class="em" role="alert"></span></div>';
+	}
+
 	config.g.forEach(function (group) {
 		markup += '<fieldset><legend>' + group[0] + '</legend>';
-
 		group[1].forEach(function (field) {
-			markup += '<div class="fl' + (field[5] ? " full" : "") + '"><label for="' + kind + field[0] + '">' + field[1] + (field[4] ? '<b class="rq" aria-hidden="true">*</b>' : "") + '</label><div class="iw"><svg viewBox="0 0 24 24" aria-hidden="true">' + fieldIcons[fieldIconNames[field[0]]] + '</svg><input id="' + kind + field[0] + '" name="' + field[0] + '" type="' + field[2] + '" autocomplete="' + (field[3] || "off") + '"' + (field[6] ? ' placeholder="' + field[6] + '"' : "") + (field[2] === "tel" ? ' inputmode="tel" maxlength="14"' : "") + (field[2] === "email" ? ' inputmode="email"' : "") + ' data-r="' + field[4] + '"></div><span class="em" role="alert"></span></div>';
+			markup += renderField(field, "");
 		});
-
 		markup += "</fieldset>";
 	});
 
-	markup += '<label class="kv"><input type="checkbox" name="kvkk"><span><a href="https://www.nisantasi.edu.tr/sayfa/kisisel-veriler-kvkk-921828" target="_blank" rel="noopener noreferrer" style="color:#0D6EB6;text-decoration:underline">KVKK Aydınlatma Metni</a>\'ni okudum ve onaylıyorum.</span></label><span class="em kvm" role="alert"></span><p class="st2" role="status"></p><button class="go" type="submit"><span class="sp2"></span><span>Başvuruyu gönder</span></button><p class="pv">Önizleme: bu sayfada başvuru kaydedilmez.</p><div class="success-panel" role="status" aria-live="polite" tabindex="-1" hidden><span class="success-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg></span><h3>Başvurunuz başarıyla tamamlandı!</h3><p>Bilgileriniz doğrulandı. Bu önizlemede gerçek kayıt oluşturulmadı.</p></div></form></div>';
+	markup += '<div class="roster-fields" hidden><div class="roster-heading"><h3>5 sporcu bilgileri</h3><p>Her sporcu için bilgileri ayrı ayrı doldurun.</p></div>';
+	for (var athleteIndex = 1; athleteIndex <= 5; athleteIndex++) {
+		markup += '<fieldset class="athlete-fields"><legend>0' + athleteIndex + '. Sporcu</legend>';
+		config.athletes.forEach(function (field) {
+			markup += renderField(field, "athlete-" + athleteIndex);
+		});
+		markup += "</fieldset>";
+	}
+	markup += '</div><label class="kv"><input type="checkbox" name="kvkk"><span><a href="https://www.nisantasi.edu.tr/sayfa/kisisel-veriler-kvkk-921828" target="_blank" rel="noopener noreferrer">KVKK Aydınlatma Metni</a>&#39;ni okudum ve onaylıyorum.</span></label><span class="em kvm" role="alert"></span><label class="kv"><input type="checkbox" name="participation_consent"><span><a class="open-terms" href="#terms-dialog">Katılım ve sorumluluk beyanı</a>&#39;ni okudum ve kabul ediyorum.</span></label><span class="em waiver-error" role="alert"></span><p class="st2" role="status"></p><button class="go" type="submit"><span class="sp2"></span><span>Başvuruyu gönder</span></button><p class="pv">Önizleme: bu sayfa başvuru bilgilerini kaydetmez.</p><div class="success-panel" role="status" aria-live="polite" tabindex="-1" hidden><span class="success-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg></span><h3>Başvurunuz alındı!</h3><p>Bu önizlemede gerçek kayıt oluşturulmadı.</p></div></form></div>';
 
 	dialog.innerHTML = markup;
 	document.body.appendChild(dialog);
@@ -283,8 +308,20 @@ function createApplicationDialog(kind) {
 	var inputs = form.querySelectorAll(".fl input");
 	var progress = dialog.querySelector(".pg i");
 	var successPanel = form.querySelector(".success-panel");
+	var rosterFields = form.querySelector(".roster-fields");
+	var teamNameInput = form.elements.namedItem("team_name");
+	var kvkkInput = form.elements.namedItem("kvkk");
+	var participationConsentInput = form.elements.namedItem("participation_consent");
+	var participationConsentLink = form.querySelector(".open-terms");
+	var participationTermsAccepted = false;
+	participationConsentLink.acceptTerms = function () {
+		participationTermsAccepted = true;
+		participationConsentInput.checked = true;
+		participationConsentInput.dispatchEvent(new Event("change", { bubbles: true }));
+	};
+
 	function validateInput(input, showMessage) {
-		var message = validateField(input.name, input.value, input.dataset.r === "1");
+		var message = validateField(input.dataset.field, input.value, input.dataset.r === "1");
 		var field = input.closest(".fl");
 
 		if (showMessage) {
@@ -298,10 +335,11 @@ function createApplicationDialog(kind) {
 	}
 
 	function updateFormProgress() {
-		var total = 1;
-		var completed = form.kvkk.checked ? 1 : 0;
+		var total = 2;
+		var completed = Number(kvkkInput.checked) + Number(participationConsentInput.checked);
 
 		inputs.forEach(function (input) {
+			if (input.closest(".roster-fields") && rosterFields.hidden) return;
 			if (input.dataset.r === "1") {
 				total++;
 				if (!validateInput(input, false)) completed++;
@@ -310,6 +348,11 @@ function createApplicationDialog(kind) {
 
 		progress.style.width = completed / total * 100 + "%";
 	}
+
+	teamNameInput.addEventListener("input", function () {
+		rosterFields.hidden = !teamNameInput.value.trim();
+		updateFormProgress();
+	});
 
 	inputs.forEach(function (input) {
 		input.addEventListener("blur", function () {
@@ -332,8 +375,17 @@ function createApplicationDialog(kind) {
 		});
 	});
 
-	form.kvkk.addEventListener("change", function () {
+	kvkkInput.addEventListener("change", function () {
 		dialog.querySelector(".kvm").textContent = "";
+		updateFormProgress();
+	});
+	participationConsentInput.addEventListener("change", function () {
+		if (participationConsentInput.checked && !participationTermsAccepted) {
+			participationConsentInput.checked = false;
+			participationConsentLink.click();
+			return;
+		}
+		dialog.querySelector(".waiver-error").textContent = "";
 		updateFormProgress();
 	});
 
@@ -342,22 +394,32 @@ function createApplicationDialog(kind) {
 		var firstInvalidInput = null;
 
 		inputs.forEach(function (input) {
+			if (input.closest(".roster-fields") && rosterFields.hidden) return;
 			if (validateInput(input, true) && !firstInvalidInput) {
 				firstInvalidInput = input;
 			}
 		});
 
-		var hasKvkkConsent = form.kvkk.checked;
+		var hasKvkkConsent = kvkkInput.checked;
+		var hasParticipationConsent = participationConsentInput.checked;
 		var status = dialog.querySelector(".st2");
 		var submitButton = dialog.querySelector(".go");
 		dialog.querySelector(".kvm").textContent = hasKvkkConsent ? "" : "KVKK aydınlatma metnini onaylamalısınız";
+		dialog.querySelector(".waiver-error").textContent = hasParticipationConsent ? "" : "Katılım ve sorumluluk beyanını kabul etmelisiniz";
 		status.textContent = "";
 
 		if (firstInvalidInput) {
 			firstInvalidInput.focus();
 			return;
 		}
-		if (!hasKvkkConsent) return;
+		if (!hasKvkkConsent) {
+			kvkkInput.focus();
+			return;
+		}
+		if (!hasParticipationConsent || !participationTermsAccepted) {
+			participationConsentInput.focus();
+			return;
+		}
 
 		submitButton.classList.add("ld");
 		submitButton.disabled = true;
@@ -419,42 +481,73 @@ $("#soc").innerHTML = Object.keys(socialIcons)
 
 // Basvuru pencerelerini ve ust menu dugmelerini bagla
 createApplicationDialog("y");
-createApplicationDialog("t");
+
+var termsDialog = $("#terms-dialog");
+var termsFrame = $("#terms-frame");
+var termsAcceptButton = $("#terms-accept");
+var termsTrigger = null;
+var termsFrameReady = false;
+
+function updateTermsScrollState() {
+	try {
+		var documentElement = termsFrame.contentDocument.documentElement;
+		var scrollElement = termsFrame.contentDocument.scrollingElement || documentElement;
+		termsAcceptButton.disabled = scrollElement.scrollTop + documentElement.clientHeight < documentElement.scrollHeight - 8;
+	} catch (error) {
+		termsAcceptButton.disabled = true;
+	}
+}
+
+function openParticipationTerms(event) {
+	event.preventDefault();
+	termsTrigger = event.currentTarget;
+	termsAcceptButton.disabled = true;
+	termsDialog.showModal();
+
+	if (termsFrameReady) {
+		termsFrame.contentWindow.scrollTo(0, 0);
+		requestAnimationFrame(updateTermsScrollState);
+	}
+}
+
+
+function bindTermsFrame() {
+	if (termsFrameReady) return;
+	termsFrameReady = true;
+	termsFrame.contentWindow.addEventListener("scroll", updateTermsScrollState, { passive: true });
+	updateTermsScrollState();
+}
+
+termsFrame.addEventListener("load", bindTermsFrame);
+if (termsFrame.contentDocument && termsFrame.contentDocument.readyState === "complete") bindTermsFrame();
+
+document.querySelectorAll(".open-terms").forEach(function (link) {
+	link.addEventListener("click", openParticipationTerms);
+});
+
+termsAcceptButton.onclick = function () {
+	if (termsAcceptButton.disabled || !termsTrigger || !termsTrigger.acceptTerms) return;
+	termsTrigger.acceptTerms();
+	termsDialog.close();
+	termsTrigger.focus();
+};
+
+$("#terms-close").onclick = function () {
+	termsDialog.close();
+};
+termsDialog.addEventListener("click", function (event) {
+	if (event.target === termsDialog) termsDialog.close();
+});
 
 document.querySelectorAll("[data-open]").forEach(function (trigger) {
 	trigger.onclick = function (event) {
 		event.preventDefault();
 		$("#m").classList.remove("o");
-		$("#cm").classList.remove("o");
-		$("#ch").setAttribute("aria-expanded", "false");
 
 		var dialog = $("#d-" + trigger.dataset.open);
 		dialog.showModal();
 		dialog.querySelector("input").focus();
 	};
-});
-
-var applicationButton = $("#ch");
-var applicationMenu = $("#cm");
-
-applicationButton.onclick = function (event) {
-	event.stopPropagation();
-	var isOpen = applicationMenu.classList.toggle("o");
-	applicationButton.setAttribute("aria-expanded", isOpen);
-};
-
-document.addEventListener("click", function (event) {
-	if (!applicationMenu.contains(event.target)) {
-		applicationMenu.classList.remove("o");
-		applicationButton.setAttribute("aria-expanded", "false");
-	}
-});
-
-document.addEventListener("keydown", function (event) {
-	if (event.key === "Escape") {
-		applicationMenu.classList.remove("o");
-		applicationButton.setAttribute("aria-expanded", "false");
-	}
 });
 
 // Cerez tercihleri

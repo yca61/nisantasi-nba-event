@@ -9,6 +9,8 @@ The application form is still a client-side preview. It validates values in the 
 ## Required before collecting real applications
 
 - Connect the form to a server-side API. Validate every field again on the server and use parameterized SQL statements.
+- Treat T.C. identity numbers as highly sensitive personal data: collect them only after legal approval, never log them, restrict staff access, encrypt them at rest and in transit, and define a short retention/deletion period.
+- Have the organization/legal team review the participation and liability declaration before using it to collect consent.
 - Add server-side rate limiting, request-size limits, origin/CSRF protection, secure error handling, and appropriate retention/deletion rules.
 - Keep the SQLite database, CSV export, seed data, and SQL tests outside the public web root. Do not deploy the `database/` directory or `database/applications.csv`.
 - Obtain and configure the hosting platform's HTTP headers. At minimum, use `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, a restrictive `Permissions-Policy`, and a response-header CSP with `frame-ancestors 'none'`. The CSP meta tag cannot set `frame-ancestors`.
