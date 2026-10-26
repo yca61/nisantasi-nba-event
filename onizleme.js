@@ -630,8 +630,16 @@ if (document.readyState === "complete") {
 setTimeout(finishIntroLoader, 4000);
 
 // Etkinlik hakkinda fotografi: giris ve hafif parallax
+// clip-path ile gizli figur kesisim olarak sayilmadigi icin kapsayici bolum izlenir
 document.querySelectorAll(".about-photo").forEach(function (figure) {
-	io.observe(figure);
+	var host = figure.closest("section") || figure.parentNode;
+	var photoIo = new IntersectionObserver(function (entries) {
+		if (entries[0].isIntersecting) {
+			figure.classList.add("v");
+			photoIo.disconnect();
+		}
+	}, { threshold: 0.15 });
+	photoIo.observe(host);
 });
 var aboutPhoto = document.querySelector(".about-photo img");
 addEventListener("scroll", function () {
