@@ -93,16 +93,18 @@ function updateScrollAnimations() {
 	heroContent.style.transform = "translate3d(0," + (-Math.min(scrollPosition, viewportHeight) * 0.12) + "px,0)";
 	heroContent.style.opacity = Math.max(0, 1 - scrollPosition / (viewportHeight * 0.9));
 
-	if (viewportWidth >= 760) {
-		var progress = Math.min(1, scrollPosition / (viewportHeight * 2.2));
-		var x = viewportWidth * 0.78 - progress * viewportWidth * 0.7;
-		var floatHeight = viewportHeight * (0.3 + 0.55 * progress);
-		var bounce = viewportHeight * 0.28 * Math.abs(Math.sin(progress * Math.PI * 3)) * (1 - 0.4 * progress);
+	var isMobile = viewportWidth < 760;
+	var ballSize = ball.offsetWidth || (isMobile ? 96 : 190);
+	var progress = Math.min(1, scrollPosition / (viewportHeight * (isMobile ? 4 : 2.2)));
+	var x = isMobile
+		? (viewportWidth - ballSize - 12) * (0.5 + 0.5 * Math.cos(progress * Math.PI * 4))
+		: viewportWidth * 0.78 - progress * viewportWidth * 0.7;
+	var floatHeight = viewportHeight * (isMobile ? 0.62 : 0.3 + 0.55 * progress);
+	var bounce = viewportHeight * (isMobile ? 0.2 : 0.28) * Math.abs(Math.sin(progress * Math.PI * (isMobile ? 6 : 3))) * (1 - 0.4 * progress);
 
-		ball.style.transform = "translate3d(" + x + "px," + (floatHeight - bounce) + "px,0)";
-		ballShape.setAttribute("transform", "rotate(" + scrollPosition * 0.4 + " 100 100)");
-		ball.style.opacity = progress > 0.9 ? Math.max(0, (1 - progress) * 10) : 1;
-	}
+	ball.style.transform = "translate3d(" + x + "px," + (floatHeight - bounce) + "px,0)";
+	ballShape.setAttribute("transform", "rotate(" + scrollPosition * 0.4 + " 100 100)");
+	ball.style.opacity = progress > 0.9 ? Math.max(0, (1 - progress) * 10) : 1;
 
 	var finalHeadingBounds = finalHeading.getBoundingClientRect();
 	var headingProgress = Math.min(1, Math.max(0, (viewportHeight - finalHeadingBounds.top) / (viewportHeight * 0.7)));
