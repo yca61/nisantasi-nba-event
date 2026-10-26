@@ -2115,3 +2115,6 @@ main{overflow-x:clip}
   #hakkinda .about-grid{max-width:none;margin:0;padding-left:clamp(20px,4vw,72px)}
   #hakkinda .about-text{text-align:left}
 }
+/* Hakkinda gorseli her zaman gorunsun (scroll animasyonuna bagli degil) */
+#hakkinda .about-photo{clip-path:none;transition:none}
+#hakkinda .about-photo img{transform:none!important}
