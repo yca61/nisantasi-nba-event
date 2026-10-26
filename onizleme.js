@@ -607,7 +607,7 @@ function finishIntroLoader() {
 	if (introDismissScheduled) return;
 	introDismissScheduled = true;
 
-	var minimumDuration = reduceMotion ? 0 : 1300;
+	var minimumDuration = reduceMotion ? 0 : (innerWidth < 760 ? 500 : 1300);
 	var remainingTime = Math.max(0, minimumDuration - (performance.now() - introStartedAt));
 
 	setTimeout(function () {
@@ -619,7 +619,7 @@ function finishIntroLoader() {
 			introLoader.remove();
 			document.documentElement.classList.remove("is-loading");
 			updateScrollAnimations();
-		}, reduceMotion ? 0 : 550);
+		}, reduceMotion ? 0 : (innerWidth < 760 ? 250 : 550));
 	}, remainingTime);
 }
 
@@ -629,7 +629,7 @@ if (document.readyState === "complete") {
 	window.addEventListener("load", finishIntroLoader, { once: true });
 }
 
-setTimeout(finishIntroLoader, 4000);
+setTimeout(finishIntroLoader, innerWidth < 760 ? 1800 : 4000);
 
 // Etkinlik hakkinda fotografi: giris ve hafif parallax
 // clip-path ile gizli figur kesisim olarak sayilmadigi icin kapsayici bolum izlenir
