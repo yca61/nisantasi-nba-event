@@ -2120,3 +2120,17 @@ main{overflow-x:clip}
 #hakkinda .about-photo img{transform:none!important}
 /* Hakkinda bolumunde gorsel yok: tek sutun */
 @media(min-width:900px){.about-grid{grid-template-columns:1fr}}
+
+/* Mobilde de scroll topu */
+@media(max-width:759.98px){
+  #ball{display:block;width:96px;height:96px;pointer-events:none;z-index:30}
+}
+
+/* Mobil performans: agir SVG filtresi ve surekli animasyonlar kapatildi */
+@media(max-width:759.98px){
+  #ball circle[filter]{filter:none}
+  #ball{filter:none!important}
+  .hero-banner{animation:none}
+  .glow{filter:none;display:none}
+  header.s{backdrop-filter:none;background:rgba(6,20,40,.96)}
+}
