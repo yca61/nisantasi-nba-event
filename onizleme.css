@@ -2092,29 +2092,3 @@ html,body{max-width:100%;overflow-x:hidden}
 main{overflow-x:clip}
 .mq{margin-left:0;margin-right:0;transform:rotate(-1.2deg)}
 @media(max-width:899.98px){#m{transform:translateY(-12px)}#m.o{transform:none}}
-
-/* Hakkinda gorseli: cta-banner, degrade gecisli */
-.about-photo{max-width:none;border-bottom:0;-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 28%,#000 100%);mask-image:linear-gradient(180deg,transparent 0,#000 28%,#000 100%)}
-.about-photo img{aspect-ratio:4/3;object-fit:cover;object-position:68% 50%}
-@media(min-width:900px){
-  .about-grid{grid-template-columns:.9fr 1.1fr}
-  .about-photo{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 38%,#000 100%);mask-image:linear-gradient(90deg,transparent 0,#000 38%,#000 100%)}
-  .about-photo img{aspect-ratio:auto;height:460px}
-}
-
-/* Hakkinda gorseli: bolumu doldursun */
-@media(min-width:900px){
-  #hakkinda{min-height:560px;display:flex;align-items:center}
-  #hakkinda .about-grid{grid-template-columns:1fr;position:relative;z-index:2}
-  #hakkinda .about-text{max-width:min(46%,34rem)}
-  #hakkinda .about-photo{position:absolute;z-index:1;top:0;right:0;bottom:0;width:62%;height:auto;max-width:none;margin:0;
-    -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 40%,#000 100%);mask-image:linear-gradient(90deg,transparent 0,#000 40%,#000 100%)}
-  #hakkinda .about-photo img{position:absolute;inset:0;width:100%;height:100%;aspect-ratio:auto;object-fit:cover;object-position:70% 50%}
-}
-@media(min-width:900px){
-  #hakkinda .about-grid{max-width:none;margin:0;padding-left:clamp(20px,4vw,72px)}
-  #hakkinda .about-text{text-align:left}
-}
-/* Hakkinda gorseli her zaman gorunsun (scroll animasyonuna bagli degil) */
-#hakkinda .about-photo{clip-path:none;transition:none}
-#hakkinda .about-photo img{transform:none!important}
